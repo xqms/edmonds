@@ -33,6 +33,21 @@ optimizations, here is the source code!
 To build an optional verifier tool which uses the `Boost.Graph` library to
 confirm that the matching is indeed maximum, use `cmake -DBUILD_VERIFIER=ON`.
 
+## Usage
+
+`edmonds` reads undirected graphs in the DIMAC specification. This means
+a simple triangular graph could look like this:
+
+    c Simple 3-vertex problem
+    p edge 3 3
+    e 1 2
+    e 2 3
+    e 3 1
+
+The output matching is printed also in DIMAC format on `stdout`:
+
+    edmonds input.dmx > matching.dmx
+
 ## License
 
 `edmonds` is licensed under GPLv2.
