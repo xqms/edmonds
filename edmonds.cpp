@@ -9,6 +9,8 @@
 #include <stdarg.h>
 #include <assert.h>
 
+#include <algorithm>
+
 ////////////////////////////////////////////////////////////////////////////////
 // VERTEX TYPE
 
@@ -374,12 +376,25 @@ void EdmondsCardinalityMatching::calculateMatching(
 
 
 	// Initialize empty matching
-	for(NodeID v = 0; v < input.numNodes(); ++v)
-		m_mu[v] = v;
+	std::vector<NodeID> sorting(input.numNodes());
 
-	// Start the algorithm with a greedy matching (takes O(m))
 	for(NodeID v = 0; v < input.numNodes(); ++v)
 	{
+		m_mu[v] = v;
+		sorting[v] = v;
+	}
+
+	// Sort the graph by vertex degree. This makes the initial greedy matching
+	// much more effective.
+	std::sort(sorting.begin(), sorting.end(), [&](NodeID v, NodeID w) {
+		return input.node(v).adjacent().size() < input.node(w).adjacent().size();
+	});
+
+	// Start the algorithm with a greedy matching (takes O(m))
+	for(NodeID i = 0; i < input.numNodes(); ++i)
+	{
+		NodeID v = sorting[i];
+
 		if(m_mu[v] != v)
 			continue;
 
