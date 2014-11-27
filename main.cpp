@@ -27,10 +27,6 @@ int main(int argc, char** argv)
 
 	graph.loadDIMAC(input);
 
-// 	printf("Loaded input graph with %u vertices and %u edges\n",
-// 		graph.numNodes(), graph.numEdges()
-// 	);
-
 	EdmondsCardinalityMatching edmond;
 
 	Graph matching;
