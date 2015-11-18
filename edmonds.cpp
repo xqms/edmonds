@@ -10,6 +10,7 @@
 #include <assert.h>
 
 #include <algorithm>
+#include <chrono>
 
 ////////////////////////////////////////////////////////////////////////////////
 // VERTEX TYPE
@@ -374,6 +375,8 @@ void EdmondsCardinalityMatching::calculateMatching(
 	m_tree.resize(input.numNodes());
 	m_forest.resize(input.numNodes());
 
+	// Some basic profiling
+	auto start = std::chrono::steady_clock::now();
 
 	// Initialize empty matching
 	std::vector<NodeID> sorting(input.numNodes());
@@ -410,6 +413,9 @@ void EdmondsCardinalityMatching::calculateMatching(
 		}
 	}
 
+	auto afterInitialMatching = std::chrono::steady_clock::now();
+	std::cerr << "Initial matching took " << std::chrono::duration_cast<std::chrono::milliseconds>(afterInitialMatching - start).count() << "ms\n";
+
 	// Reset the forest pointers and init the outer vertex queue
 	reset();
 
@@ -419,6 +425,9 @@ void EdmondsCardinalityMatching::calculateMatching(
 	{
 		step(x);
 	}
+
+	auto afterComputation = std::chrono::steady_clock::now();
+	std::cerr << "Matching computation took " << std::chrono::duration_cast<std::chrono::milliseconds>(afterComputation - afterInitialMatching).count() << "ms\n";
 
 	// Recover matching from m_mu
 	matching.reset(m_graph->numNodes());
