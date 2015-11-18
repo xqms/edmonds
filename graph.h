@@ -20,6 +20,8 @@ class Node
 {
 friend Graph; // m_adjacent is modified by Graph::addEdge()
 public:
+	Node();
+
 	//! Return list of adjacent nodes
 	const std::vector<NodeID>& adjacent() const
 	{ return m_adjacent; }
@@ -71,9 +73,16 @@ public:
 	//! Load a DIMAC graph from stream @a stream
 	void loadDIMAC(std::istream& stream);
 
+#if __unix__
+	//! Load a DIMAC graph from a file descriptor (optimized)
+	void loadDIMACFromFD(int fd);
+#endif
+
 	//! Write a DIMAC graph into stream @a stream
 	void toDIMAC(std::ostream& stream);
 private:
+	void parseDIMACLine(const char* line);
+
 	std::vector<Node> m_nodes;
 	std::size_t m_nodeCount;
 
