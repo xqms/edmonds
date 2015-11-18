@@ -360,9 +360,7 @@ void EdmondsCardinalityMatching::step(NodeID x)
 	}
 }
 
-void EdmondsCardinalityMatching::calculateMatching(
-	const Graph& input, Graph& matching
-)
+void EdmondsCardinalityMatching::calculateMatching(const Graph& input)
 {
 	// Setup pointer for other member methods
 	m_graph = &input;
@@ -428,7 +426,10 @@ void EdmondsCardinalityMatching::calculateMatching(
 
 	auto afterComputation = std::chrono::steady_clock::now();
 	std::cerr << "Matching computation took " << std::chrono::duration_cast<std::chrono::milliseconds>(afterComputation - afterInitialMatching).count() << "ms\n";
+}
 
+void EdmondsCardinalityMatching::writeMatching(Graph& matching)
+{
 	// Recover matching from m_mu
 	matching.reset(m_graph->numNodes());
 
@@ -440,5 +441,22 @@ void EdmondsCardinalityMatching::calculateMatching(
 			matching.addEdge(v, m_mu[v]);
 			m_scanned[m_mu[v]] = true;
 		}
+	}
+}
+
+void EdmondsCardinalityMatching::writeMatchingDIMAC(std::ostream& stream)
+{
+	unsigned int cardinality = 0;
+	for(NodeID v = 0; v < m_graph->numNodes(); ++v)
+	{
+		if(v < m_mu[v])
+			cardinality++;
+	}
+
+	stream << "p edge " << m_graph->numNodes() << ' ' << cardinality << '\n';
+	for(NodeID v = 0; v < m_graph->numNodes(); ++v)
+	{
+		if(v < m_mu[v])
+			stream << "e " << (v+1) << ' ' << (m_mu[v]+1) << '\n';
 	}
 }

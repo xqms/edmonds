@@ -17,7 +17,10 @@ public:
 	 *
 	 * Runtime: O(n^3), where n is the number of vertices.
 	 **/
-	void calculateMatching(const Graph& input, Graph& matching);
+	void calculateMatching(const Graph& input);
+
+	void writeMatching(Graph& output);
+	void writeMatchingDIMAC(std::ostream& stream);
 private:
 	//! Type of vertices in our graph: inner/outer/out-of-tree.
 	enum VertexType

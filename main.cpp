@@ -30,9 +30,9 @@ int main(int argc, char** argv)
 	EdmondsCardinalityMatching edmond;
 
 	Graph matching;
-	edmond.calculateMatching(graph, matching);
+	edmond.calculateMatching(graph);
 
-	matching.toDIMAC(std::cout);
+	edmond.writeMatchingDIMAC(std::cout);
 
 	return 0;
 }
