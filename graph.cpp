@@ -78,7 +78,9 @@ void Graph::parseDIMACLine(const char* line)
 		if(v >= numNodes() || w >= numNodes())
 			throw LoadError("Node indices out of bounds in edge spec");
 
-		addEdge(v, w);
+		m_edges.emplace_back(v, w);
+		m_loadDegrees[v]++;
+		m_loadDegrees[w]++;
 	}
 	else if(line[0] == 'c')
 	{
@@ -94,6 +96,8 @@ void Graph::parseDIMACLine(const char* line)
 
 		reset(n);
 		m_edges.reserve(m);
+		m_loadDegrees.clear();
+		m_loadDegrees.resize(n, 0);
 	}
 	else
 	{
@@ -158,6 +162,8 @@ void Graph::loadDIMACFromFD(int fd)
 
 	parseDIMACLine(incompleteLine.c_str());
 	incompleteLine.clear();
+
+	fillAdjacencyLists();
 }
 #endif
 
@@ -177,6 +183,8 @@ void Graph::loadDIMAC(std::istream& stream)
 	}
 
 	std::ios_base::sync_with_stdio(true);
+
+	fillAdjacencyLists();
 }
 
 void Graph::toDIMAC(std::ostream& stream)
@@ -190,4 +198,16 @@ void Graph::toDIMAC(std::ostream& stream)
 		stream << "e " << (e.first+1) << " " << (e.second+1) << "\n";
 	}
 	std::ios_base::sync_with_stdio(true);
+}
+
+void Graph::fillAdjacencyLists()
+{
+	for(std::size_t v = 0; v < m_nodes.size(); ++v)
+		m_nodes[v].m_adjacent.reserve(m_loadDegrees[v]);
+
+	for(Edge& e : m_edges)
+	{
+		m_nodes[e.first].m_adjacent.push_back(e.second);
+		m_nodes[e.second].m_adjacent.push_back(e.first);
+	}
 }

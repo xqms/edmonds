@@ -82,11 +82,14 @@ public:
 	void toDIMAC(std::ostream& stream);
 private:
 	void parseDIMACLine(const char* line);
+	void fillAdjacencyLists();
 
 	std::vector<Node> m_nodes;
 	std::size_t m_nodeCount;
 
 	std::vector<Edge> m_edges;
+
+	std::vector<std::size_t> m_loadDegrees;
 };
 
 #endif
